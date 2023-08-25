@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Get Current Location</title>
+</head>
+<body>
+    <button id="getLocationBtn">Get My Location</button>
+    <p id="locationResult"></p>
+
+    <script>
+        document.getElementById("getLocationBtn").addEventListener("click", function() {
+            if ("geolocation" in navigator) {
+                // Get the user's current position
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var latitude = position.coords.latitude;
+                    var longitude = position.coords.longitude;
+                    var accuracy = position.coords.accuracy;
+                    
+                    var locationText = "Latitude: " + latitude + "<br>Longitude: " + longitude + "<br>Accuracy: " + accuracy + " meters";
+
+                    document.getElementById("locationResult").innerHTML = locationText;
+                }, function(error) {
+                    // Handle errors
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            document.getElementById("locationResult").innerHTML = "User denied the request for Geolocation.";
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            document.getElementById("locationResult").innerHTML = "Location information is unavailable.";
+                            break;
+                        case error.TIMEOUT:
+                            document.getElementById("locationResult").innerHTML = "The request to get user location timed out.";
+                            break;
+                        case error.UNKNOWN_ERROR:
+                            document.getElementById("locationResult").innerHTML = "An unknown error occurred.";
+                            break;
+                    }
+                });
+            } else {
+                document.getElementById("locationResult").innerHTML = "Geolocation is not supported by this browser.";
+            }
+        });
+    </script>
+</body>
+</html>
