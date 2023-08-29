@@ -1,4 +1,6 @@
 import json
+import folium
+from django.shortcuts import render
 from asgiref.sync import async_to_sync
 
 from channels.generic.websocket import WebsocketConsumer
@@ -38,3 +40,5 @@ class ChatConsumer(WebsocketConsumer):
 
         # Send message to WebSocket
         self.send(text_data=json.dumps({"message": message}))
+
+

@@ -1,4 +1,5 @@
 from typing import Any, Dict
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic import TemplateView,FormView,CreateView
 
@@ -22,3 +23,10 @@ class RoomView(TemplateView):
         context['room_name']=room_name
         return context
 
+
+import random
+def generate_pin(request):
+    pin = str(random.randint(100000, 999999))
+    
+      
+    return HttpResponse("Users please enter this secure pin to connect " + pin)
