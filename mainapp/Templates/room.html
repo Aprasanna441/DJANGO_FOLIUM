@@ -1,43 +1,41 @@
 {% extends 'base.html' %}
- {% block title %}-Chat Room{% endblock %} 
+ {% block title %}-Chat Room{% endblock %}
  {% block content %}
 
- <p id="loc"></p>
- <div id="map" style="width: 100%; height: 600px;"></div>
+<h1 id="dist">12</h1>
+<div id="map" style="width: 100%; height: 600px"></div>
 
-<input id="chat-message-submit" type="button"  style="text-align:center;" value="Share" />
+<input
+  id="chat-message-submit"
+  type="button"
+  style="text-align: center"
+  value="Share"
+/>
 {{ room_name|json_script:"room-name" }}
-
 
 <script>
   const roomName = JSON.parse(document.getElementById("room-name").textContent);
 
-
   navigator.geolocation.getCurrentPosition(function (position) {
-    sessionStorage.setItem("latitude", position.coords.latitude+1);
-        sessionStorage.setItem("longitude", position.coords.longitude+12);
-       
-        
-  })
-        
+    sessionStorage.setItem("latitude", position.coords.latitude + 1);
+    sessionStorage.setItem("longitude", position.coords.longitude + 12);
+  });
 
-
- 
   const chatSocket = new WebSocket(
     "ws://" + window.location.host + "/ws/" + roomName + "/"
   );
 
+  let latitude1, longitude1;
   chatSocket.onmessage = function (e) {
     const data = JSON.parse(e.data);
-    document.querySelector("#loc").innerHTML+= data.message + "\n";
-    console.log(data.message[0])
+    console.log(data.message);
+    latitude1 = data.message[1];
+    longitude1 = data.message[0];
   };
 
   chatSocket.onclose = function (e) {
     console.error("Chat socket closed unexpectedly");
   };
-
- 
 
   // document.querySelector('#chat-message-submit').onclick = function(e) {
   // const messageInputDom = document.querySelector('#chat-message-input');
@@ -45,55 +43,76 @@
   function refreshLocation() {
     // const message = messageInputDom.value;
     if ("geolocation" in navigator) {
-       
       // Get the user's current position
       navigator.geolocation.getCurrentPosition(function (position) {
         var latitude = position.coords.latitude;
         var longitude = position.coords.longitude;
         var accuracy = position.coords.accuracy;
-        
-        const message = [longitude, latitude];
-        
-       
 
-        if (
-          sessionStorage.getItem("longitude") == longitude &&
-          sessionStorage.getItem("latitude") == latitude
-        ) 
-        {
-        } else {
-            console.log("changed")
-          sessionStorage.setItem("longitude", longitude);
-          sessionStorage.setItem("latitude", latitude);
+        let message = [longitude, latitude];
+
+        // if (
+        //   sessionStorage.getItem("longitude") == longitude &&
+        //   sessionStorage.getItem("latitude") == latitude
+        // ) {
+          
+        // } else {
+        //   sessionStorage.setItem("longitude", longitude);
+        //   sessionStorage.setItem("latitude", latitude);
+        //   chatSocket.send(
+        //     JSON.stringify({
+        //       message: message,
+        //     })
+        //   );
+        // }
+
+
+
+        if (sessionStorage.getItem("share")=="Yes"){
           chatSocket.send(
             JSON.stringify({
               message: message,
             })
           );
         }
-       
+        else{
 
-      
-
-        var map = L.map('map').setView([latitude, longitude], 10);
-        var container = L.DomUtil.get('map');
-      if(container != null){
-        container._leaflet_id = null;
-      }
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
+        var map = L.map("map").setView([latitude, longitude], 1);
+        var container = L.DomUtil.get("map");
+        if (container != null) {
+          container._leaflet_id = null;
+        }
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: "© OpenStreetMap contributors",
         }).addTo(map);
 
-        L.marker([latitude, longitude]).addTo(map)
-            .bindPopup(longitude)
-            .openPopup();
        
-           
+       
+          L.marker([latitude, longitude])
+            .addTo(map)
+            .bindPopup(sessionStorage.getItem("username"))
+            .openPopup();
+
+            console.log(latitude1,longitude1)
+        
+          L.marker([latitude1, longitude1])
+            .addTo(map)
+            .bindPopup("other")
+            .openPopup();
+
+       
+
+      }
+
+
       });
     }
   }
-  setInterval(refreshLocation,500)
-   
-// refreshLocation()
+  setInterval(refreshLocation, 500);
+
+  
+
+
+
 </script>
 {% endblock %}

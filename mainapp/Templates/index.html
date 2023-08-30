@@ -1,7 +1,18 @@
 {% extends 'base.html' %}
 {% block title %}Home{% endblock %}
 {% block content %}
-    Enter the ID of person you want to track.<br>
+<label for="username" >Enter your username</label>
+<input type="text"  id="username"/><p id="message" style="color:green"></p><br>
+<button id="share" class="btn btn-info">I want to join</button>
+<script>
+document.querySelector("#share").onclick=()=>{
+    sessionStorage.setItem("share","Yes")
+}
+</script>
+<h1 style="text-align: center;">OR</h1>
+<h1 style="text-align: center;">TRACK OTHERS LOCATION</h1>
+
+    Enter the  unique pin after generating below<br>
 
     <input id="room-name-input" type="text" size="100"><br>
     <input id="room-name-submit" class="btn btn-primary" type="button" value="Enter">
@@ -9,14 +20,28 @@
 
 
     <a class="btn btn-info" href="{% url 'mainapp:generate_pin' %}">Generate my pin</a>
+
+
+
     <script>
-        document.querySelector('#room-name-input').focus();
+
+        document.querySelector('#username').onkeyup=(e)=>{
+            if (e.key === 'Enter') {  // enter, return
+                const t=document.querySelector('#username').value;
+                sessionStorage.setItem("username",t)
+                document.querySelector('#message').innerHTML="Done"
+                document.querySelector('#username').value=""
+                
+                
+            }
+            
+        }
+                    document.querySelector('#room-name-input').focus();
         document.querySelector('#room-name-input').onkeyup = function(e) {
             if (e.key === 'Enter') {  // enter, return
                 document.querySelector('#room-name-submit').click();
             }
         };
-
         document.querySelector('#room-name-submit').onclick = function(e) {
             var roomName = document.querySelector('#room-name-input').value;
             window.location.pathname = 
